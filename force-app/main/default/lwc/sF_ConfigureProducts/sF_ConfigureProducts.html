@@ -1,0 +1,145 @@
+<template>
+    <div class="add-product">
+        <lightning-button if:true={showColumns} variant="brand" label="Accept Quote" title="Accept Quote"
+            onclick={acceptQuoteClick} class="slds-m-right_x-small">
+        </lightning-button>
+        <lightning-button variant="brand" label="Add Product" title="Add Product" onclick={openModal}
+            class="slds-m-left_x-small">
+        </lightning-button>
+    </div>
+    <template if:true={isModalOpen}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                            size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Search Products
+                    </h2>
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content modal-body" id="modal-content-id-1">
+                    <lightning-input type="search" variant="label-hidden" class="slds-var-m-bottom_small" label="Search"
+                        placeholder="Search for products" value={searchKey} onchange={handleSearchTermChange}>
+                    </lightning-input>
+                    <div class="titles">
+                        <span>Name</span>
+                        <div class="title-styles">
+                            <span>Price</span>
+                            <span>Quantity</span>
+                        </div>
+                    </div>
+                    <template for:each={searchProducts} for:item="product" for:index="index">
+                        <details key={product.Id}>
+                            <summary>
+                                <span>{product.Name}</span>
+                                <template for:each={product.SF_Price_List_Items__r} for:item="item">
+                                    <div class="modal-info" key={item.Id}>
+                                        <div class="qty-style2">
+                                            <lightning-formatted-number value={item.Base_Price__c}
+                                                format-style="currency" currency-code={item.CurrencyIsoCode}>
+                                            </lightning-formatted-number>
+                                            <input class="qty-style" type="number" min="1" value={product.Quantity}
+                                                data-index={index} data-id={product.Id} onchange={changeQuantity}>
+                                        </div>
+                                    </div>
+                                </template>
+                                <lightning-button class="add-button" variant="brand" label="Add" title="Add"
+                                    onclick={addClick} data-index={index} data-id={product.Id}>
+                                </lightning-button>
+                            </summary>
+                            <template for:each={product.Option_Products__r} for:item="option">
+                                <div class="option-list" key={option.Id}>
+                                    <div class="checkbox-style">
+                                        <lightning-input data-id={option.Id} data-index={index}
+                                            checked={option.SF_IsOptional__c} type="checkbox" onchange={checkClick}
+                                            disabled={option.SF_IsOptional__c}>
+                                        </lightning-input>
+                                    </div>
+                                    <p>{option.Name}</p>
+                                    <div class="qty-style2">
+                                        <lightning-formatted-number value={option.BasePrice} style="margin-right:20px;"
+                                            format-style="currency" currency-code={option.CurrencyIsoCode}>
+                                        </lightning-formatted-number>
+                                        <input class="qty-style" type="number" min="1" value={option.Quantity}
+                                            data-id={option.Id} onchange={changeQuantity} data-index={index}>
+                                    </div>
+                                </div>
+                            </template>
+                        </details>
+                    </template>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_brand" onclick={closeModal} title="Done">Done</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+
+    <template if:true={showColumns}>
+        <template for:each={fieldsData} for:item="columnName">
+            <span class="columns" key={columnName.Id}> {columnName.label}</span>
+        </template>
+    </template>
+
+    <template for:each={bundles} for:item="qli" for:index="index">
+        <details key={qli.Id}>
+            <summary>
+                <span>{qli.Name}</span>
+                <div>
+                    <div class="bundle-qlis">
+                        <lightning-formatted-number value={qli.SF_Unit_Price__c} format-style="currency"
+                            currency-code={qli.CurrencyIsoCode}>
+                        </lightning-formatted-number>
+                        <lightning-formatted-number value={qli.SF_Total_Price__c} format-style="currency"
+                            currency-code={qli.CurrencyIsoCode}>
+                        </lightning-formatted-number>
+                        <lightning-formatted-number value={qli.SF_Subtotal__c} format-style="currency"
+                            currency-code={qli.CurrencyIsoCode}>
+                        </lightning-formatted-number>
+                        <lightning-formatted-number value={qli.SF_Discount__c} format-style="percent-fixed"
+                            maximum-fraction-digits="3">
+                        </lightning-formatted-number>
+                        <input class="qty-style" type="number" min="1" value={qli.SF_Quantity__c} data-index={index}
+                            data-id={qli.Id} readonly>
+                    </div>
+                </div>
+                <div class="clone-button">
+                    <lightning-icon icon-name="action:clone" alternative-text="Clone" title="Clone" size="xx-small"
+                        class="icons" data-id={qli.Id} onclick={cloneQuoteLineItemsClick}></lightning-icon>
+                </div>
+
+            </summary>
+            <template for:each={qli.optQlis} for:item="option">
+                <div class="option-qlis" key={option.Id}>
+                    <p>{option.Name}</p>
+                    <div class="table-fields">
+                        <lightning-formatted-number value={option.SF_Unit_Price__c} format-style="currency"
+                            currency-code={option.CurrencyIsoCode}>
+                        </lightning-formatted-number>
+                        <lightning-formatted-number value={option.SF_Total_Price__c} format-style="currency"
+                            currency-code={option.CurrencyIsoCode}>
+                        </lightning-formatted-number>
+                        <lightning-formatted-number value={option.SF_Subtotal__c} format-style="currency"
+                            currency-code={option.CurrencyIsoCode}>
+                        </lightning-formatted-number>
+                        <lightning-formatted-number value={option.SF_Discount__c} format-style="percent-fixed"
+                            maximum-fraction-digits="3">
+                        </lightning-formatted-number>
+                        <input class="qty-style" type="number" min="1" value={option.SF_Quantity__c} data-id={option.Id}
+                            onchange={quantityChanger}>
+                    </div>
+                </div>
+            </template>
+        </details>
+    </template>
+</template>
