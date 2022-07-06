@@ -44,7 +44,7 @@ export default class SF_ConfigureProducts extends LightningElement {
         this.currentPageReference = currentPageReference;
         this.quoteId = this.currentPageReference?.state?.c__recordId;
     }
-
+    //test commit
     @wire(getQuoteLineItems, ({ quoteId: '$quoteId' }))
     retrieveItems(result) {
         this.tableData = result;
