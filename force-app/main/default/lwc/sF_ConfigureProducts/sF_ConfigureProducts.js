@@ -38,13 +38,21 @@ export default class SF_ConfigureProducts extends LightningElement {
     qlitems = [];
     fieldsData = [];
     mapData = [];
+    newMapQli;
+
+    currencyValues = [];
+    numberValues = [];
+    stringValues = [];
+    percentValues = [];
+    otherValues = [];
+
 
     @wire(CurrentPageReference)
     setCurrentPageReference(currentPageReference) {
         this.currentPageReference = currentPageReference;
         this.quoteId = this.currentPageReference?.state?.c__recordId;
     }
-    //test commit
+
     @wire(getQuoteLineItems, ({ quoteId: '$quoteId' }))
     retrieveItems(result) {
         this.tableData = result;
@@ -77,25 +85,75 @@ export default class SF_ConfigureProducts extends LightningElement {
         if (this.qlitems === undefined || this.qlitems.length == 0) {
             // this.showColumns = false;
         }
+        // console.log(this.qlitems, '  data');
 
-        let mapQli = new Map();
-        for (let key in this.qlitems[0]) {
-            mapQli.set(key, this.qlitems[0][key]);
-  
-        }
+    
+        this.qlitems.forEach(element => {
+            let mapQli = new Map();
+            for(let key in element) {
+                mapQli.set(key, element[key]);
+            }
+            console.log(mapQli, ' MAPPED');
 
         this.fieldsData.forEach(element => {
-            const innerObject = {};
-            innerObject['type'] = element.type
-        });
-        mapQli.forEach(element => {
-        })
+            const innerObject = {
+                recordId : mapQli.get('Id'),
+                bundle : mapQli.get('SF_Is_Bundle__c'),
+                type : element.type,
+                value : mapQli.get(element.fieldApi)
+            }
+            console.log(innerObject, ' innner');
 
-        // let mapQli = new Map();
-        // for (let key in this.quoteLineItems[0]) {
-        //     mapQli.set(key, this.quoteLineItems[0][key]);
-        //     console.log(mapQli, '  MAP of QLis');
-        // }
+            if (innerObject.type === 'CURRENCY') {
+                this.currencyValues.push(innerObject);
+            } else if (innerObject.type === 'DOUBLE') {
+                this.numberValues.push(innerObject)
+            } else if (innerObject.type === 'STRING') {
+                this.stringValues.push(innerObject)
+            } else if (innerObject.type === 'PERCENT') {
+                this.percentValues.push(innerObject);
+            } else {
+                this.otherValues.push(innerObject);
+            }
+            });
+        });
+
+        console.log(this.currencyValues, ' currency');
+        console.log(this.numberValues, ' number');
+        console.log(this.stringValues, ' string');
+        console.log(this.percentValues, ' percent');
+        console.log(this.otherValues, '  others');
+
+        for(let i=0; i<this.qlitems.length; i++) {
+            // this.currencyValues.forEach(price => {
+                // console.log(price.value, "pr");
+                const row = {
+                    string : this.stringValues[i].value,
+                    unitPrice : this.currencyValues[i].value,
+                    // totalPrice : this.currencyValues[i].value,
+                    // subTotal : this.currencyValues[i].value,
+                    percent : this.percentValues[i].value,
+                    number : this.numberValues[i].value
+                }
+                console.log(row, '  row');
+            // })
+            
+            
+        }
+
+    
+
+ 
+        
+   
+  
+    
+        // this.fieldsData.forEach(element => {
+        //     const innerObject = {};
+        //     innerObject['type'] = element.type
+        // });
+
+
 
         // this.bundles.forEach(element => {
         //     let newMap = new Map(Object.entries(element));

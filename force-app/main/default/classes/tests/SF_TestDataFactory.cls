@@ -39,6 +39,34 @@ public with sharing class SF_TestDataFactory {
         return testAcc;
     }
 
+    public static List<SF_Quote_Line_Item__c> insertQuoteLineItems() {
+
+        SF_Price_List_Item__c testPLI = insertPLIWithProductAndPriceList();
+        Account testAcc = inserAccountsWithOppsAndContacts();
+        SF_Quote__c testQuote = [SELECT Id FROM SF_Quote__c WHERE SF_Account__c =:testAcc.Id LIMIT 1];
+        List<SF_Quote_Line_Item__c> qliList = new List<SF_Quote_Line_Item__c>();
+
+        SF_Quote_Line_Item__c testQliBundle = new SF_Quote_Line_Item__c(
+            Name = 'testQliBundle',
+            SF_Product__c = testPLI.Product__c,
+            SF_Price_List_Item__c = testPLI.Id,
+            SF_Quote__c = testQuote.Id,
+            SF_Is_Bundle__c = true
+        );
+            qliList.add(testQliBundle);
+
+        SF_Quote_Line_Item__c testQliOption = new SF_Quote_Line_Item__c(
+            Name = 'testQliOption',
+            SF_Product__c = testPLI.Product__c,
+            SF_Price_List_Item__c = testPLI.Id,
+            SF_Quote__c = testQuote.Id,
+            SF_Is_Bundle__c = false
+        );
+
+            qliList.add(testQliOption);
+            return qliList;
+    }
+
     public static SF_Price_List_Item__c insertPLIWithProductAndPriceList() {
         Product2 testProduct = new Product2(
             Name = 'TestProduct',
@@ -48,7 +76,7 @@ public with sharing class SF_TestDataFactory {
         insert testProduct;
 
         SF_Price_List__c testPL = new SF_Price_List__c(
-            Name = 'TestPL',
+            Name = 'USD_Price_List',
             CurrencyIsoCode = 'USD'
         );
         insert testPL;
@@ -61,6 +89,36 @@ public with sharing class SF_TestDataFactory {
         insert testPLI;
 
         return testPLI;
+    }
+
+    public static List<SF_QuoteLineItemController.ProductWrapper> productWrappperData() {
+
+        SF_Price_List_Item__c testPLI = insertPLIWithProductAndPriceList();
+        List<SF_QuoteLineItemController.ProductWrapper> testWrappers = new List<SF_QuoteLineItemController.ProductWrapper>();
+
+        SF_QuoteLineItemController.ProductWrapper testWrapBundle = new SF_QuoteLineItemController.ProductWrapper();
+            testWrapBundle.name = 'Test Bundle Qli';
+            testWrapBundle.productId = testPLI.Product__c;
+            testWrapBundle.pliId = testPLI.Id;
+            testWrapBundle.basePrice = 100;
+            testWrapBundle.quantity = 1;
+            testWrapBundle.isBundle = true;
+            testWrapBundle.currencyIsoCode = 'USD';
+
+        testWrappers.add(testWrapBundle);
+
+        SF_QuoteLineItemController.ProductWrapper testWrapOption = new SF_QuoteLineItemController.ProductWrapper();
+            testWrapOption.name = 'Test Option Qli';
+            testWrapOption.productId = testPLI.Product__c;
+            testWrapOption.pliId = testPLI.Id;
+            testWrapOption.basePrice = 100;
+            testWrapOption.quantity = 1;
+            testWrapOption.isBundle = false;
+            testWrapOption.currencyIsoCode = 'USD';
+            
+        testWrappers.add(testWrapOption);
+
+        return testWrappers;
     }
 
     public static SF_Quote__c insertQuoteData(){

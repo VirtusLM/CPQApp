@@ -15,8 +15,6 @@ public with sharing class SF_QuoteLineItemController {
     @AuraEnabled
     public static void createQuoteLineItems(List<ProductWrapper> data, Id quoteId) {
 
-        System.debug('$$$$$$$$$$$$$$$$$$$$$$$$$$ DATA ' + data);
-
         List<SF_Quote_Line_Item__c> qliList = new List<SF_Quote_Line_Item__c>();
         
         for(ProductWrapper pr : data) {
@@ -67,11 +65,9 @@ public with sharing class SF_QuoteLineItemController {
         @AuraEnabled public String currencyIsoCode { get; set; }
     }
 
-
+    
     @AuraEnabled
     public static void cloneQuoteLineItems(List<SF_Quote_Line_Item__c> qlis, Id quoteId) {
-
-        system.debug('@@@@@@@@@@@@@@@@@@@@@@@ ' + qlis);
 
         List<SF_Quote_Line_Item__c> qliList = new List<SF_Quote_Line_Item__c>();
 

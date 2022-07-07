@@ -11,7 +11,7 @@ public class SF_QuoteLineItemTriggerTest {
         List<Account> testAcc = [SELECT Id FROM Account WHERE Name ='TestAccount'];
         List<SF_Quote__c> testQuote = [SELECT Id FROM SF_Quote__c WHERE SF_Account__c =:testAcc[0].Id];
         List<Product2> testProduct = [SELECT Id FROM Product2 WHERE Name ='TestProduct'];
-        List<SF_Price_List__c> testPriceList = [SELECT Id FROM SF_Price_List__c WHERE Name ='TestPL'];
+        List<SF_Price_List__c> testPriceList = [SELECT Id FROM SF_Price_List__c WHERE Name ='USD_Price_List'];
         List<SF_Price_List_Item__c> testPLI = [SELECT Id, Base_Price__c FROM SF_Price_List_Item__c 
                                                 WHERE Price_List__c =:testPriceList[0].Id AND Product__c =:testProduct[0].Id];
 
