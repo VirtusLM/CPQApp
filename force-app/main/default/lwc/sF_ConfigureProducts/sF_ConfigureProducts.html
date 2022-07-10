@@ -150,9 +150,6 @@
 <br>
 <br>
 <!-- <tr> -->
-    <!-- <td>
-        <button onclick={handelExpand}>{buttonIcon}</button>
-    </td> -->
     <!-- <template for:each={stringValues} for:item="stringValue">
         <td key={stringValue.recordId}>
             {stringValue.value}
@@ -177,15 +174,6 @@
     </template>
 </tr> -->
 
-<!-- <template if:true={expandOptions}>
-    <template for:each={options} for:item="option">
-        <c-s-f_-qli-bundle-option key={option.Id}  
-            label-info={labelInfo} qli-data={options} qli-id={option.Id} currency-iso-code={option.currencyIsoCode}>
-        </c-s-f_-qli-bundle-option>
-    </template> -->
-<!-- </template> -->
-
-
 <!-- <template if:true={showColumns}>
     <template for:each={fieldsData} for:item="columnName">
         <span class="columns" key={columnName.Id}> {columnName.label}</span>
@@ -204,58 +192,5 @@
                         currency-code={currencyIsoCode} currency-display-as="code">
                     </lightning-formatted-number>
             </template> -->
-
-
-
-            <!-- <div>
-                <div class="bundle-qlis">
-                    <lightning-formatted-number value={qli.SF_Unit_Price__c} format-style="currency"
-                        currency-code={qli.CurrencyIsoCode}>
-                    </lightning-formatted-number>
-                    <lightning-formatted-number value={qli.SF_Total_Price__c} format-style="currency"
-                        currency-code={qli.CurrencyIsoCode}>
-                    </lightning-formatted-number>
-                    <lightning-formatted-number value={qli.SF_Subtotal__c} format-style="currency"
-                        currency-code={qli.CurrencyIsoCode}>
-                    </lightning-formatted-number>
-                    <lightning-formatted-number value={qli.SF_Discount__c} format-style="percent-fixed"
-                        maximum-fraction-digits="3">
-                    </lightning-formatted-number>
-                    <input class="qty-style" type="number" min="1" value={qli.SF_Quantity__c} data-index={index}
-                        data-id={qli.Id} readonly>
-                </div>
-            </div>
-            <div class="clone-button">
-                <lightning-icon icon-name="action:clone" alternative-text="Clone" title="Clone" size="xx-small"
-                    class="icons" data-id={qli.Id} onclick={cloneQuoteLineItemsClick}></lightning-icon>
-            </div> -->
-
-        <!-- </summary> -->
-        <!-- <template for:each={qli.optQlis} for:item="option">
-            <div class="option-qlis" key={option.Id}>
-                <p>{option.Name}</p>
-                <div class="table-fields">
-                    <lightning-formatted-number value={option.SF_Unit_Price__c} format-style="currency"
-                        currency-code={option.CurrencyIsoCode}>
-                    </lightning-formatted-number>
-                    <lightning-formatted-number value={option.SF_Total_Price__c} format-style="currency"
-                        currency-code={option.CurrencyIsoCode}>
-                    </lightning-formatted-number>
-                    <lightning-formatted-number value={option.SF_Subtotal__c} format-style="currency"
-                        currency-code={option.CurrencyIsoCode}>
-                    </lightning-formatted-number>
-                    <lightning-formatted-number value={option.SF_Discount__c} format-style="percent-fixed"
-                        maximum-fraction-digits="3">
-                    </lightning-formatted-number>
-                    <input class="qty-style" type="number" min="1" value={option.SF_Quantity__c} data-id={option.Id}
-                        onchange={quantityChanger}>
-                </div>
-            </div>
-        </template> -->
-    <!-- </details> -->
-<!-- </template> -->
-
-
-
 
 </template>

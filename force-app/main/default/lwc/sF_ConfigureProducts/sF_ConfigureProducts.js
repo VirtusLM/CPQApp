@@ -5,7 +5,6 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 import getProductsByQuoteId from '@salesforce/apex/SF_QuoteController.getProductsByQuoteId';
 import getPriceListItemsByQuoteId from '@salesforce/apex/SF_QuoteController.getPriceListItemsByQuoteId';
-import getQuoteLineItemFieldNames from '@salesforce/apex/SF_QuoteController.getQuoteLineItemFieldNames';
 import createQuoteLineItems from '@salesforce/apex/SF_QuoteLineItemController.createQuoteLineItems';
 import cloneQuoteLineItems from '@salesforce/apex/SF_QuoteLineItemController.cloneQuoteLineItems'
 import getQuoteLineItems from '@salesforce/apex/SF_QuoteController.getQuoteLineItems';
@@ -16,36 +15,28 @@ export default class SF_ConfigureProducts extends LightningElement {
 
     @track currentPageReference;
     @track isModalOpen = false;
-    @track tableProducts = [];
-
     userProducts = [];
     filteredOptions = [];
     quoteLineItems = [];
     searchProducts = [];
-    columnNames = [];
+    tableData = [];
     products = [];
     basePrices = [];
-    options = [];
-    quoteId;
-    optionQli;
-    searchKey = '';
-    wrapperArray = [];
-    message = true;
-    showColumns = true;
-    tableData = [];
     bundles = [];
-    filteredBundles = [];
+    options = [];
     qlitems = [];
     fieldsData = [];
-    mapData = [];
-    newMapQli;
-
     currencyValues = [];
     numberValues = [];
     stringValues = [];
     percentValues = [];
     otherValues = [];
-
+    quoteId;
+    optionQli;
+    searchKey = '';
+    message = true;
+    showColumns = true;
+ 
 
     @wire(CurrentPageReference)
     setCurrentPageReference(currentPageReference) {
@@ -58,10 +49,11 @@ export default class SF_ConfigureProducts extends LightningElement {
         this.tableData = result;
         if (result.data) {
             this.quoteLineItems = JSON.parse(JSON.stringify(result.data));
-            console.log(this.quoteLineItems, ' Base data');
             this.qlitems = this.quoteLineItems.qlis;
+            if(this.qlitems === undefined || this.qlitems.length == 0) {
+                this.showColumns = false;
+            }
             this.fieldsData = this.quoteLineItems.fields;
-            console.log(this.fieldsData, ' fieldsdata');
         }
         const bundles = [];
         const options = [];
@@ -72,7 +64,6 @@ export default class SF_ConfigureProducts extends LightningElement {
                 options.push(element);
             }
         });
-
         bundles.forEach(element => {
             element['optQlis'] = [];
             options.forEach(item => {
@@ -82,90 +73,48 @@ export default class SF_ConfigureProducts extends LightningElement {
             });
         });
         this.bundles = bundles;
-        if (this.qlitems === undefined || this.qlitems.length == 0) {
-            // this.showColumns = false;
-        }
-        // console.log(this.qlitems, '  data');
 
-    
+
         this.qlitems.forEach(element => {
             let mapQli = new Map();
-            for(let key in element) {
+            for (let key in element) {
                 mapQli.set(key, element[key]);
             }
-            console.log(mapQli, ' MAPPED');
 
-        this.fieldsData.forEach(element => {
-            const innerObject = {
-                recordId : mapQli.get('Id'),
-                bundle : mapQli.get('SF_Is_Bundle__c'),
-                type : element.type,
-                value : mapQli.get(element.fieldApi)
-            }
-            console.log(innerObject, ' innner');
+            this.fieldsData.forEach(element => {
+                const innerObject = {
+                    recordId: mapQli.get('Id'),
+                    bundle: mapQli.get('SF_Is_Bundle__c'),
+                    type: element.type,
+                    value: mapQli.get(element.fieldApi)
+                }
 
-            if (innerObject.type === 'CURRENCY') {
-                this.currencyValues.push(innerObject);
-            } else if (innerObject.type === 'DOUBLE') {
-                this.numberValues.push(innerObject)
-            } else if (innerObject.type === 'STRING') {
-                this.stringValues.push(innerObject)
-            } else if (innerObject.type === 'PERCENT') {
-                this.percentValues.push(innerObject);
-            } else {
-                this.otherValues.push(innerObject);
-            }
+                if (innerObject.type === 'CURRENCY') {
+                    this.currencyValues.push(innerObject);
+                } else if (innerObject.type === 'DOUBLE') {
+                    this.numberValues.push(innerObject)
+                } else if (innerObject.type === 'STRING') {
+                    this.stringValues.push(innerObject)
+                } else if (innerObject.type === 'PERCENT') {
+                    this.percentValues.push(innerObject);
+                } else {
+                    this.otherValues.push(innerObject);
+                }
             });
         });
 
-        console.log(this.currencyValues, ' currency');
-        console.log(this.numberValues, ' number');
-        console.log(this.stringValues, ' string');
-        console.log(this.percentValues, ' percent');
-        console.log(this.otherValues, '  others');
-
-        for(let i=0; i<this.qlitems.length; i++) {
-            // this.currencyValues.forEach(price => {
-                // console.log(price.value, "pr");
-                const row = {
-                    string : this.stringValues[i].value,
-                    unitPrice : this.currencyValues[i].value,
-                    // totalPrice : this.currencyValues[i].value,
-                    // subTotal : this.currencyValues[i].value,
-                    percent : this.percentValues[i].value,
-                    number : this.numberValues[i].value
-                }
-                console.log(row, '  row');
-            // })
-            
-            
+        for (let i = 0; i < this.qlitems.length; i++) {
+            const row = {
+                string: this.stringValues[i].value,
+                unitPrice: this.currencyValues[i].value,
+                totalPrice: this.currencyValues[i].value,
+                subTotal: this.currencyValues[i].value,
+                percent: this.percentValues[i].value,
+                number: this.numberValues[i].value
+            }
         }
-
-    
-
- 
-        
-   
-  
-    
-        // this.fieldsData.forEach(element => {
-        //     const innerObject = {};
-        //     innerObject['type'] = element.type
-        // });
-
-
-
-        // this.bundles.forEach(element => {
-        //     let newMap = new Map(Object.entries(element));
-        //     const keys = [...newMap.keys()];
-        //     const values = [...newMap.values()];
-        //     this.mapData.push({ key: keys, value: values });
-        // this.mapData.push(keys, values);
-        // console.log(newMap);
-        // let optArray = [];
-
     }
-   
+
     connectedCallback() {
         if (!!this.quoteId) {
             getProductsByQuoteId({ quoteId: this.quoteId })
@@ -178,17 +127,17 @@ export default class SF_ConfigureProducts extends LightningElement {
                         .then(result => {
                             this.basePrices = JSON.parse(JSON.stringify(result));
                             this.products.forEach(element => {
-                                element.Option_Products__r.forEach(temp => {
+                                element.Option_Products__r.forEach(item => {
                                     this.basePrices.forEach(param => {
-                                        if (temp.Id === param.Product__c) {
-                                            temp['BasePrice'] = param.Base_Price__c;
-                                            temp['CurrencyIsoCode'] = param.CurrencyIsoCode;
-                                            temp['PriceListItem'] = param.Id;
-                                            temp['Quantity'] = 1;
-                                            if (temp.SF_IsOptional__c) {
-                                                temp.SF_IsOptional__c = false;
+                                        if (item.Id === param.Product__c) {
+                                            item['BasePrice'] = param.Base_Price__c;
+                                            item['CurrencyIsoCode'] = param.CurrencyIsoCode;
+                                            item['PriceListItem'] = param.Id;
+                                            item['Quantity'] = 1;
+                                            if (item.SF_IsOptional__c) {
+                                                item.SF_IsOptional__c = false;
                                             } else {
-                                                temp.SF_IsOptional__c = true;
+                                                item.SF_IsOptional__c = true;
                                             }
                                         }
                                     });
@@ -197,14 +146,10 @@ export default class SF_ConfigureProducts extends LightningElement {
                             this.searchProducts = JSON.parse(JSON.stringify(this.products));
                             this.userProducts = JSON.parse(JSON.stringify(this.products));
                         });
-                });
-
-            getQuoteLineItemFieldNames()
-                .then(result => {
-                    if (Array.isArray(result)) {
-                        this.columnNames = result;
-              
-                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    //Showtoast
                 });
         }
     }
@@ -214,19 +159,12 @@ export default class SF_ConfigureProducts extends LightningElement {
         const checkedValue = event.target.checked;
 
         this.userProducts.forEach(element => {
-            element.Option_Products__r.forEach(temp => {
-                if (temp.Id === productId) {
-                    temp.SF_IsOptional__c = checkedValue;
-                    // if (temp.SF_IsOptional__c) {
-                    //     element.SF_Price_List_Items__r.forEach(res => {
-                    //         res.Base_Price__c += temp.BasePrice;
-                    //     });
-                    // }
+            element.Option_Products__r.forEach(item => {
+                if (item.Id === productId) {
+                    item.SF_IsOptional__c = checkedValue;
                 }
             });
         });
-
-        console.log(this.userProducts, '  Checked Array');
     }
 
     changeQuantity(event) {
@@ -234,14 +172,12 @@ export default class SF_ConfigureProducts extends LightningElement {
         const qtyValue = event.target.value;
 
         this.userProducts.forEach(element => {
-            element.Option_Products__r.forEach(temp => {
-                element.SF_Price_List_Items__r.forEach(res => {
-                    if (temp.Id === productId) {
-                        temp.Quantity = qtyValue;
-                    } else if (element.Id === productId) {
-                        element.Quantity = qtyValue;
-                    }
-                });
+            element.Option_Products__r.forEach(item => {
+                if (item.Id === productId) {
+                    item.Quantity = qtyValue;
+                } else if (element.Id === productId) {
+                    element.Quantity = qtyValue;
+                }
             });
         });
     }
@@ -250,9 +186,9 @@ export default class SF_ConfigureProducts extends LightningElement {
         const index = event.currentTarget.dataset.index;
         const selectedProduct = this.userProducts[index];
         this.addShowToast();
-        const wrapperArray = [];
         this.filteredOptions = selectedProduct.Option_Products__r.filter(value => value.SF_IsOptional__c !== false);
 
+        const wrapperArray = [];
         this.filteredOptions.forEach(element => {
             const option = {};
 
@@ -279,13 +215,16 @@ export default class SF_ConfigureProducts extends LightningElement {
             bundle['currencyIsoCode'] = element.CurrencyIsoCode;
 
             wrapperArray.push(bundle);
-
         });
-        console.log(wrapperArray, ' ###############');
+
         createQuoteLineItems({ data: wrapperArray, quoteId: this.quoteId })
             .then(() => {
                 refreshApex(this.tableData);
                 this.showColumns = true;
+            })
+            .catch(error => {
+                console.error(error);
+                //showtoast
             });
     }
 
@@ -303,14 +242,13 @@ export default class SF_ConfigureProducts extends LightningElement {
         }
     }
 
+    //Table quantity changer
     quantityChanger(event) {
         const qliId = event.target.dataset.id;
         const qtyValue = event.target.value;
-        console.log(qliId, ' Qli Id');
-        console.log(qtyValue, ' Quantity');
 
-        this.bundles.forEach(element => {
-            element.optQlis.forEach(option => {
+        this.bundles.forEach(bundle => {
+            bundle.optQlis.forEach(option => {
                 if (option.Id === qliId) {
                     option.SF_Quantity__c = qtyValue;
                     this.optionQli = option;
@@ -318,37 +256,35 @@ export default class SF_ConfigureProducts extends LightningElement {
                         .then(() => {
                             refreshApex(this.tableData);
                             this.showColumns = true;
-                    });
+                        });
                 }
             });
         });
-
-        console.log(this.optionQli, '  option changing');
     }
 
     cloneQuoteLineItemsClick(event) {
         const qliId = event.target.dataset.id;
         this.cloneShowToast();
-        console.log(qliId, ' QLI Id');
 
         let filteredBundles = [];
-        console.log(filteredBundles, ' before filtered');
-
         filteredBundles = this.bundles.filter(value => value.Id == qliId);
-        console.log(filteredBundles, ' filtered');
 
         filteredBundles.forEach(bundle => {
             bundle.optQlis.forEach(opt => {
                 filteredBundles.push(opt);
             });
         });
-        console.log(filteredBundles, ' last');
         cloneQuoteLineItems({ qlis: filteredBundles, quoteId: this.quoteId })
             .then(() => {
                 refreshApex(this.tableData);
                 this.showColumns = true;
+            })
+            .catch(error => {
+                console.error(error);
+                //showtoast
             });
     }
+
 
     cloneShowToast() {
         const event = new ShowToastEvent({

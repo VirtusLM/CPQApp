@@ -1,17 +1,19 @@
 /*
 * ============================================
 * @apexClassName: SF_QuoteLineItemController.cls
-* @description: Class contains the logic of creating quote line items
+* @description: Class contains the logic of creating, cloning and changing quantity of quote line items.
 * @author: L.Mikatsadze
 * @email: l.mikatsadze@makingscience.com
 * @testClass: SF_QuoteLineItemControllerTest.cls
 * @dateCreated: 20/06/2022
-* @lastChange: 22/06/2022 by L.Mikatsadze
+* @lastChange: 10/07/2022 by L.Mikatsadze
 * ============================================
 */
 
 public with sharing class SF_QuoteLineItemController {
 
+    //@author: L.Mikatsadze
+    //@description: Creates bundle and option quote line items. 
     @AuraEnabled
     public static void createQuoteLineItems(List<ProductWrapper> data, Id quoteId) {
 
@@ -65,7 +67,8 @@ public with sharing class SF_QuoteLineItemController {
         @AuraEnabled public String currencyIsoCode { get; set; }
     }
 
-    
+    //@author: L.Mikatsadze
+    //@description: Clones bundle quote line items with option quote line items.     
     @AuraEnabled
     public static void cloneQuoteLineItems(List<SF_Quote_Line_Item__c> qlis, Id quoteId) {
 
@@ -107,6 +110,8 @@ public with sharing class SF_QuoteLineItemController {
         insert optionQlis;
     }
 
+    //@author: L.Mikatsadze
+    //@description: Changes quantity of option quote line items.     
     @AuraEnabled
     public static void changeQuantity(SF_Quote_Line_Item__c qli) {
 

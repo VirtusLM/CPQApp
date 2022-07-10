@@ -1,0 +1,50 @@
+{
+  "summary": {
+    "outcome": "Failed",
+    "testsRan": 1,
+    "passing": 0,
+    "failing": 1,
+    "skipped": 0,
+    "passRate": "0%",
+    "failRate": "100%",
+    "skipRate": "0%",
+    "testStartTime": "Fri Jul 08 2022 4:21:13 PM",
+    "testExecutionTimeInMs": 145,
+    "testTotalTimeInMs": 145,
+    "commandTimeInMs": 336,
+    "hostname": "https://sweeftdigitalamakingscienc5-dev-ed.my.salesforce.com",
+    "orgId": "00D8d000004IPiYEAW",
+    "username": "lukamikatsadze@cpq.com",
+    "testRunId": "7078d000019PE7i",
+    "userId": "0058d000002rpxaAAA"
+  },
+  "tests": [
+    {
+      "id": "07M8d000000ao0eEAA",
+      "queueItemId": "7098d000000gbdgAAA",
+      "stackTrace": "Class.SF_QuoteController.createQuote: line 53, column 1\nClass.SF_QuoteControllerTest.test_createQuote: line 48, column 1",
+      "message": "System.ListException: List index out of bounds: 0",
+      "asyncApexJobId": "7078d000019PE7iAAG",
+      "methodName": "test_createQuote",
+      "outcome": "Fail",
+      "apexLogId": "07L8d000002s2bMEAQ",
+      "apexClass": {
+        "id": "01p8d00000BkOR5AAN",
+        "name": "SF_QuoteControllerTest",
+        "namespacePrefix": null,
+        "fullName": "SF_QuoteControllerTest"
+      },
+      "runTime": 145,
+      "testTimestamp": "2022-07-08T12:21:16.000+0000",
+      "fullName": "SF_QuoteControllerTest.test_createQuote",
+      "diagnostic": {
+        "exceptionMessage": "System.ListException: List index out of bounds: 0",
+        "exceptionStackTrace": "Class.SF_QuoteController.createQuote: line 53, column 1\nClass.SF_QuoteControllerTest.test_createQuote: line 48, column 1",
+        "className": "SF_QuoteController",
+        "compileProblem": "",
+        "lineNumber": 53,
+        "columnNumber": 1
+      }
+    }
+  ]
+}

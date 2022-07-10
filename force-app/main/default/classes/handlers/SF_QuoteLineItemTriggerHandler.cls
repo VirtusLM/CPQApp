@@ -9,6 +9,7 @@
 * ============================================
 */
 public with sharing class SF_QuoteLineItemTriggerHandler {
+    
     //@author: L.Mikatsadze
     //@description: Gets field values from Product2 and SF_Price_List_Item__c objects and defines to SF_Quote_Line_Item__c fields.
     public static void defineQuoteLineItemValues(List<SF_Quote_Line_Item__c> quoteLineItems) {

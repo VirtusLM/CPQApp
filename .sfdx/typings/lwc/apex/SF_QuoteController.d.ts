@@ -10,12 +10,9 @@ declare module "@salesforce/apex/SF_QuoteController.getQuoteLineItemFieldTypes" 
 declare module "@salesforce/apex/SF_QuoteController.getQuoteLineItems" {
   export default function getQuoteLineItems(param: {quoteId: any}): Promise<any>;
 }
-declare module "@salesforce/apex/SF_QuoteController.getProductsByQuoteId" {
-  export default function getProductsByQuoteId(param: {quoteId: any}): Promise<any>;
-}
 declare module "@salesforce/apex/SF_QuoteController.getPriceListItemsByQuoteId" {
   export default function getPriceListItemsByQuoteId(param: {quoteId: any}): Promise<any>;
 }
-declare module "@salesforce/apex/SF_QuoteController.getProductList" {
-  export default function getProductList(param: {quoteId: any}): Promise<any>;
+declare module "@salesforce/apex/SF_QuoteController.getProductsByQuoteId" {
+  export default function getProductsByQuoteId(param: {quoteId: any}): Promise<any>;
 }

@@ -1,14 +1,25 @@
 @isTest 
-public with sharing class SF_TestDataFactory {
-    
-    public static Account inserAccountsWithOppsAndContacts() {
+public class SF_TestDataFactory {
+
+    public static SF_Price_List__c createPriceList() {
+        SF_Price_List__c testPL = new SF_Price_List__c(
+            Name = 'USD Price List',
+            CurrencyIsoCode = 'USD'
+        );
+        return testPL;
+    }
+
+    public static Account createAccount(SF_Price_List__c testPL) {
         Account testAcc = new Account(
             Name = 'TestAccount',
             SF_Account_Location__c = 'United States',
-            CurrencyIsoCode = 'USD'
+            CurrencyIsoCode = 'USD',
+            SF_Price_List__c = testPL.Id
         );
-        insert testAcc;
-
+        return testAcc;
+    }
+    
+    public static Opportunity createOpportunity(Account testAcc) {
         Opportunity testOpp = new Opportunity(
             Name = 'TestOpp',
             AccountId = testAcc.Id,
@@ -16,8 +27,10 @@ public with sharing class SF_TestDataFactory {
             CloseDate = System.today().addDays(7),
             CurrencyIsoCode = 'USD'
         );
-        insert testOpp; 
+        return testOpp; 
+    }
 
+    public static Contact createContact(Account testAcc) {
         Contact testCon = new Contact(
             Salutation = 'Mr.',
             SF_Primary__c = true,
@@ -25,81 +38,107 @@ public with sharing class SF_TestDataFactory {
             AccountId = testAcc.Id,
             CurrencyIsoCode = 'USD'
         );
-        insert testCon; 
+        return testCon; 
+    }
 
+    public static SF_Quote__c createQuote(Account testAcc, Opportunity testOpp, Contact testCon) {
         SF_Quote__c testQuote = new SF_Quote__c(
             Name = 'TestQuote',
             SF_Account__c = testAcc.Id,
             SF_Opportunity__c = testOpp.Id,
             SF_Contact__c = testCon.Id,
+            SF_Price_List__c = testOpp.SF_Price_List__c,
+            SF_Status__c = 'Approved',
             SF_Expiration_Date__c = System.today().addDays(7)
         );
-        insert testQuote;
-
-        return testAcc;
+        return testQuote;
     }
-
-    public static List<SF_Quote_Line_Item__c> insertQuoteLineItems() {
-
-        SF_Price_List_Item__c testPLI = insertPLIWithProductAndPriceList();
-        Account testAcc = inserAccountsWithOppsAndContacts();
-        SF_Quote__c testQuote = [SELECT Id FROM SF_Quote__c WHERE SF_Account__c =:testAcc.Id LIMIT 1];
-        List<SF_Quote_Line_Item__c> qliList = new List<SF_Quote_Line_Item__c>();
-
-        SF_Quote_Line_Item__c testQliBundle = new SF_Quote_Line_Item__c(
-            Name = 'testQliBundle',
-            SF_Product__c = testPLI.Product__c,
-            SF_Price_List_Item__c = testPLI.Id,
-            SF_Quote__c = testQuote.Id,
-            SF_Is_Bundle__c = true
-        );
-            qliList.add(testQliBundle);
-
-        SF_Quote_Line_Item__c testQliOption = new SF_Quote_Line_Item__c(
-            Name = 'testQliOption',
-            SF_Product__c = testPLI.Product__c,
-            SF_Price_List_Item__c = testPLI.Id,
-            SF_Quote__c = testQuote.Id,
-            SF_Is_Bundle__c = false
-        );
-
-            qliList.add(testQliOption);
-            return qliList;
-    }
-
-    public static SF_Price_List_Item__c insertPLIWithProductAndPriceList() {
+    
+    public static Product2 createProduct() {
         Product2 testProduct = new Product2(
-            Name = 'TestProduct',
+            Name = 'Macbook Pro',
             CurrencyIsoCode = 'USD',
-            SF_Is_Bundle__c = true
+            SF_Is_Bundle__c = true 
         );
-        insert testProduct;
+        return testProduct;
+    }
 
-        SF_Price_List__c testPL = new SF_Price_List__c(
-            Name = 'USD_Price_List',
+    public static Product2 createProduct2() {
+        Product2 testProduct = new Product2(
+            Name = 'Macbook Air',
             CurrencyIsoCode = 'USD'
         );
-        insert testPL;
+        return testProduct;
+    }
 
+    public static Product2 createProduct3() {
+        Product2 testProduct = new Product2(
+            Name = 'iPad Pro',
+            CurrencyIsoCode = 'USD'
+        );
+        return testProduct;
+    }
+    
+    public static Product2 createOptionProduct(Product2 testProduct) {
+        Product2 testOptionProduct = new Product2(
+            Name = 'Apple Pencil',
+            CurrencyIsoCode = 'USD',
+            Product__c = testProduct.Id
+        );
+        return testOptionProduct;
+    }
+
+    public static SF_Price_List_Item__c createPriceListItem(Product2 testProduct, SF_Price_List__c testPL) {
         SF_Price_List_Item__c testPLI = new SF_Price_List_Item__c(
             Product__c = testProduct.Id,
             Price_List__c = testPL.Id,  
-            Base_Price__c = 100
+            Base_Price__c = 100,
+            SF_Active__c = true,
+            CurrencyIsoCode = 'USD'
         );
-        insert testPLI;
-
         return testPLI;
     }
 
-    public static List<SF_QuoteLineItemController.ProductWrapper> productWrappperData() {
+    public static SF_Quote_Line_Item__c createQliBundle (SF_Price_List_Item__c testPriceListItem, SF_Quote__c testQuote) {
+        SF_Quote_Line_Item__c testQliBundle = new SF_Quote_Line_Item__c(
+            Name = 'testQliBundle',
+            SF_Product__c = testPriceListItem.Product__c,
+            SF_Price_List_Item__c = testPriceListItem.Id,
+            SF_Quote__c = testQuote.Id,
+            SF_Total_Price__c = 100,
+            SF_Subtotal__c = 100,
+            SF_Quantity__c = 1,
+            SF_Discount__c = 10,
+            CurrencyIsoCode = 'USD', 
+            SF_Is_Bundle__c = true
+        );
+        return testQliBundle;
+    }
 
-        SF_Price_List_Item__c testPLI = insertPLIWithProductAndPriceList();
+    public static SF_Quote_Line_Item__c createQliOption (SF_Price_List_Item__c testPriceListItem, SF_Quote__c testQuote) {
+        SF_Quote_Line_Item__c testQliOption = new SF_Quote_Line_Item__c(
+            Name = 'testQliOption',
+            SF_Product__c = testPriceListItem.Product__c,
+            SF_Price_List_Item__c = testPriceListItem.Id,
+            SF_Quote__c = testQuote.Id,
+            SF_Total_Price__c = 100,
+            SF_Subtotal__c = 100,
+            SF_Quantity__c = 1,
+            SF_Discount__c = 10,
+            CurrencyIsoCode = 'USD', 
+            SF_Is_Bundle__c = false
+        );
+        return testQliOption;
+    }
+
+    public static List<SF_QuoteLineItemController.ProductWrapper> productWrapperData(SF_Price_List_Item__c testPriceListItem) {
+
         List<SF_QuoteLineItemController.ProductWrapper> testWrappers = new List<SF_QuoteLineItemController.ProductWrapper>();
 
         SF_QuoteLineItemController.ProductWrapper testWrapBundle = new SF_QuoteLineItemController.ProductWrapper();
             testWrapBundle.name = 'Test Bundle Qli';
-            testWrapBundle.productId = testPLI.Product__c;
-            testWrapBundle.pliId = testPLI.Id;
+            testWrapBundle.productId = testPriceListItem.Product__c;
+            testWrapBundle.pliId = testPriceListItem.Id;
             testWrapBundle.basePrice = 100;
             testWrapBundle.quantity = 1;
             testWrapBundle.isBundle = true;
@@ -109,8 +148,8 @@ public with sharing class SF_TestDataFactory {
 
         SF_QuoteLineItemController.ProductWrapper testWrapOption = new SF_QuoteLineItemController.ProductWrapper();
             testWrapOption.name = 'Test Option Qli';
-            testWrapOption.productId = testPLI.Product__c;
-            testWrapOption.pliId = testPLI.Id;
+            testWrapOption.productId = testPriceListItem.Product__c;
+            testWrapOption.pliId = testPriceListItem.Id;
             testWrapOption.basePrice = 100;
             testWrapOption.quantity = 1;
             testWrapOption.isBundle = false;
@@ -120,6 +159,12 @@ public with sharing class SF_TestDataFactory {
 
         return testWrappers;
     }
+   
+
+
+
+//############################################################################################################################################################
+//############################################################################################################################################################
 
     public static SF_Quote__c insertQuoteData(){
 		Account acc = new Account();
