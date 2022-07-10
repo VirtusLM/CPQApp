@@ -1,0 +1,26 @@
+<template>
+    <lightning-button-group>
+        <lightning-button label="Edit Shipping Address" onclick={handleCreateShipping}></lightning-button>
+        <lightning-button label="Edit Billing Address" onclick={handleCreateBilling}></lightning-button>
+        <lightning-button label="Save" variant="success" icon-name="utility:save" onclick={handleSave}></lightning-button>
+    </lightning-button-group> 
+    <template if:true={showAddressForm}>
+       <lightning-input-address 
+        address-label={labels.Account_Address}
+        street-label={labels.Account_Address_Street}
+        city-label={labels.Account_Address_City}
+        country-label={labels.Account_Address_Country}   
+        province-label={labels.Account_Address_State} 
+        postal-code-label={labels.Account_Address_Postal_Code}
+        street=''
+        city=''
+        country=''
+        province=''
+        postal-code=''
+        show-address-lookup 
+        onchange={handleChange}
+      > 
+      </lightning-input-address>  
+      <lightning-map list-view='visible' map-markers={mapMarkers}></lightning-map>
+    </template>
+</template>
